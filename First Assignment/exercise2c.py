@@ -31,7 +31,7 @@ def myhist(I, bins):
     return H
 
 Img = imread('images/bird.jpg') # --> Image values are from [0,1] float
-I_gray = ((Img[:,:,0] + Img[:,:,1] + Img[:,:,2]) / 3)
+I_gray = ((Img[:,:,0] + Img[:,:,1] + Img[:,:,2]) / 3) * 5
 
 plt.subplot(1,3,1)
 plt.imshow(I_gray, cmap="gray")

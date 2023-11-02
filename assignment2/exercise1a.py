@@ -15,22 +15,28 @@ def simple_convolution(signal,kernel):
     l_I = len(I)
     conv = np.zeros(l_I)    # Array I will modify and return
 
-    print(l_I,l_k)
-
     fpos = int((l_k - 1) / 2)    # First position - fpos
-    lpos = int((l_k - fpos - 1))    # Last position - lpos
+    lpos = int((l_I - fpos - 1))    # Last position - lpos
 
     for i in range(fpos, lpos):
         sum = 0
         for x in range(l_k):
             sum = (k[x] * I[(i - l_k) + x]) + sum
-
         conv[i] = sum
-
+    
     return conv
-
 
 convolution = simple_convolution('assignment2/signal.txt','assignment2/kernel.txt')
 
-plt.imshow(convolution)
+I = read_data('assignment2/signal.txt')
+k = read_data('assignment2/kernel.txt')
+cvconv = cv2.filter2D(src= I , ddepth= -1,kernel= k)
+
+plt.plot(I, label = 'Original')
+plt.plot(k, label = 'Kernel')
+plt.plot(convolution, label = 'Result')
+plt.plot(cvconv, label = 'cv2')
+
+plt.legend()
+
 plt.show()
