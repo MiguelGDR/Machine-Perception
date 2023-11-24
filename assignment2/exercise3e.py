@@ -53,13 +53,30 @@ def myhist(I, bins):
 
 def myhist3(I, bins):
     # Empty 3D matrix
-    H = np.zeros((3,bins))
+    H = np.zeros((bins,bins,bins))
 
-    H[0,:] = myhist(I[:,:,0], bins)
-    H[1,:] = myhist(I[:,:,1], bins)
-    H[2,:] = myhist(I[:,:,2], bins)
+    size_bin = 256 / bins   # En el caso de 8 bins, el tamaño de cada bin será 32 [0 a 31]
 
-    H = H / (I.shape[0] * I.shape[1])
+    for i in range(I.shape[0]):
+        for j in range(I.shape[1]):
+            R = I[i,j,0]
+            G = I[i,j,1]
+            B = I[i,j,2]
+
+            # Variable chose bin
+            r = 0
+            g = 0
+            b = 0
+            for i in range(bins):
+                if ((i * size_bin) <= R) and (R <= (((i + 1) * size_bin) - 1)):
+                    r = i
+                if ((i * size_bin) <= G) and (G <= (((i + 1) * size_bin) - 1)):
+                    g = i
+                if ((i * size_bin) <= B) and (B <= (((i + 1) * size_bin) - 1)):
+                    b = i
+            
+            H[r,g,b] += 1;
+
 
     return H
 
