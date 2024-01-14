@@ -75,7 +75,7 @@ def myhist3(I, bins):
                 if ((i * size_bin) <= B) and (B <= (((i + 1) * size_bin) - 1)):
                     b = i
             
-            H[r,g,b] += 1;
+            H[r,g,b] += 1
 
 
     return H

@@ -84,22 +84,34 @@ def gradient_magnitude(I,sigma):
     return I_mag, I_dir
 
 def findedges(I,sigma,theta):
-    I_mag = gradient_magnitude(I, sigma)
-    Ie = np.where(I_mag[0] >= theta, 1, 0)
-    return Ie
+    I_gm = gradient_magnitude(I, sigma)
+    Imag = np.where(I_gm[0] > theta, I_gm[0], 0)
+    Idir = abs(I_gm[1]) * (180/math.pi)
+    Inonmax = np.copy(Imag)
 
-I = imread('assignment3/images/museum.jpg')
-I = ((I[:,:,0] + I[:,:,1] + I[:,:,2]) / 3)
+    for i in range(1, Imag.shape[0] - 1):
+        for j in range(1, Imag.shape[1] - 1):
+            angulo = Idir[i,j]
 
-plt.subplot(1,2,1)
-plt.imshow(I, cmap='gray')
-plt.title('Original')
+            if (0 <= angulo <= 22.5) or (157.5 <= angulo <= 180):
+                neighbors = [Imag[i,j-1],Imag[i,j+1]]
+            elif 22.5 <= angulo <= 67.5:
+                neighbors = [Imag[i-1,j-1], Imag[i+1,j+1]]
+            elif 67.5 <= angulo <= 112.5:
+                neighbors = [Imag[i,j-1], Imag[i,j+1]]
+            elif 112.5 <= angulo <= 157.5:
+                neighbors = [Imag[i+1,j-1], Imag[i-1, j+1]]
 
-# Edge Detection
-Ie = findedges(I,1,0.14)
+            if Imag[i,j] < max(neighbors):
+                Inonmax[i,j] = 0
+    Inonmax = np.where(Inonmax > 0, 1,0)
+    return Inonmax
 
-plt.subplot(1,2,2)
-plt.imshow(Ie, cmap='gray')
-plt.title('Edge Detection')
-
-plt.show()
+def nonmaxima_suppression_box(ac):
+    h , w = ac.shape
+    accumulator = ac
+    for i in range(1,h-1):
+        for j in range(1,w-1):
+            if (ac[i,j] < ac[i-1,j-1]) or (ac[i,j] < ac[i-1,j]) or (ac[i,j] < ac[i-1,j+1]) or (ac[i,j] < ac[i,j-1]) or (ac[i,j] < ac[i,j+1]) or (ac[i,j] < ac[i+1,j-1]) or (ac[i,j] < ac[i+1,j]) or (ac[i,j] < ac[i+1,j+1]):
+                accumulator[i,j] = 0
+    return accumulator

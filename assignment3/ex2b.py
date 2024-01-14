@@ -84,9 +84,28 @@ def gradient_magnitude(I,sigma):
     return I_mag, I_dir
 
 def findedges(I,sigma,theta):
-    I_mag = gradient_magnitude(I, sigma)
-    Ie = np.where(I_mag[0] >= theta, 1, 0)
-    return Ie
+    I_gm = gradient_magnitude(I, sigma)
+    Imag = np.where(I_gm[0] > theta, I_gm[0], 0)
+    Idir = abs(I_gm[1]) * (180/math.pi)
+    Inonmax = np.copy(Imag)
+
+    for i in range(1, Imag.shape[0] - 1):
+        for j in range(1, Imag.shape[1] - 1):
+            angulo = Idir[i,j]
+
+            if (0 <= angulo <= 22.5) or (157.5 <= angulo <= 180):
+                neighbors = [Imag[i,j-1],Imag[i,j+1]]
+            elif 22.5 <= angulo <= 67.5:
+                neighbors = [Imag[i-1,j-1], Imag[i+1,j+1]]
+            elif 67.5 <= angulo <= 112.5:
+                neighbors = [Imag[i,j-1], Imag[i,j+1]]
+            elif 112.5 <= angulo <= 157.5:
+                neighbors = [Imag[i+1,j-1], Imag[i-1, j+1]]
+
+            if Imag[i,j] < max(neighbors):
+                Inonmax[i,j] = 0
+    Inonmax = np.where(Inonmax > 0, 1,0)
+    return Inonmax
 
 I = imread('assignment3/images/museum.jpg')
 I = ((I[:,:,0] + I[:,:,1] + I[:,:,2]) / 3)
@@ -96,7 +115,7 @@ plt.imshow(I, cmap='gray')
 plt.title('Original')
 
 # Edge Detection
-Ie = findedges(I,1,0.14)
+Ie = findedges(I,1,0.18)
 
 plt.subplot(1,2,2)
 plt.imshow(Ie, cmap='gray')
